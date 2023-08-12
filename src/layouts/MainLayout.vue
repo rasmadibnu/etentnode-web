@@ -235,7 +235,7 @@ export default defineComponent({
 
   setup() {
     const events = useEventStore();
-    const socket = new WebSocket("ws://api.etentnode.online/ws");
+    const socket = new WebSocket("wss://api.etentnode.online/ws");
 
     socket.addEventListener("message", function (event) {
       const jsonData = JSON.parse(event.data);
