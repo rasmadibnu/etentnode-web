@@ -1,0 +1,33 @@
+.right-sticky-column-table {
+  /* specifying max-width so the example can
+    highlight the sticky column on any browser window */
+  max-width: 100%;
+
+  td:last-child {
+    background-color: #fff;
+  }
+
+  th:last-child,
+  td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+  }
+
+  th:last-child {
+    background-color: #e0e0e0;
+  }
+}
+
+.q-table thead {
+  background-color: #0000001f;
+  color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+
+.q-table thead th {
+  font-weight: 600;
+}
+
+* {
+  @apply tw-scrollbar-thin tw-scrollbar-thumb-secondary/50 tw-scrollbar-track-transparent tw-scrollbar-thumb-rounded-xl;
+}
