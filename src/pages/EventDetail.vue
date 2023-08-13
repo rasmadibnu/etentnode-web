@@ -847,7 +847,7 @@ export default defineComponent({
         title: title,
         message: message,
         external_ids: external_ids,
-        chanel_id: "e152bbd4-389a-46f2-af2e-fcd717b77b38",
+        channel_id: "e152bbd4-389a-46f2-af2e-fcd717b77b38",
       };
       this.$api.post("/send-notification", payload);
     },
