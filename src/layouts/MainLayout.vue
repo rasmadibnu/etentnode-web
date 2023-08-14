@@ -25,7 +25,7 @@
               }}</q-badge
             >
             <q-menu>
-              <q-list separator>
+              <q-list separator style="max-width: 300px">
                 <template v-if="notification.length > 0">
                   <q-item
                     clickable
