@@ -8,12 +8,12 @@
           <q-card-section>
             <div class="text-h6 tw-font-semibold">Detail Kejadian</div>
           </q-card-section>
-          <q-card-section>
+          <q-card-section class="q-pt-none">
             <div
               class="tw-cursor-zoom-in text-center"
               @click="openImageDialog(event?.image)"
             >
-              <q-avatar class="tw-w-full" square>
+              <q-avatar class="tw-w-full tw-h-52" square>
                 <q-img :src="event?.image" />
               </q-avatar>
             </div>
@@ -854,7 +854,7 @@ export default defineComponent({
 
     updateNotification() {
       this.$api.put(
-        "/notification/" + this.$route.params.id + "/" + this.user.role.name,
+        "/notification/" + this.$route.params.id + "/" + this.user?.role?.name,
         { is_read: 1 }
       );
     },
