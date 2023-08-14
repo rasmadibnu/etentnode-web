@@ -1,6 +1,8 @@
 <template>
   <q-page class="tw-p-4 tw-py-14">
-    <div class="tw-grid tw-grid-cols-12 tw-gap-4">
+    <div
+      class="tw-grid md:tw-grid-cols-12 tw-grid-cols-4 md:tw-gap-4 tw-space-y-4 md:tw-space-y-0"
+    >
       <div class="tw-col-span-8">
         <q-card flat class="tw-w-full">
           <q-card-section>
@@ -11,7 +13,7 @@
               class="tw-cursor-zoom-in text-center"
               @click="openImageDialog(event?.image)"
             >
-              <q-avatar size="400px" square>
+              <q-avatar class="tw-w-full" square>
                 <q-img :src="event?.image" />
               </q-avatar>
             </div>
@@ -24,6 +26,7 @@
                 standout
                 readonly
                 label-slot
+                :loading="loading"
               >
                 <q-tooltip> {{ event?.location }}</q-tooltip>
                 <template #label>
@@ -51,6 +54,7 @@
                 standout
                 readonly
                 label-slot
+                :loading="loading"
               >
                 <template #label>
                   <div class="tw-font-semibold tw-text-lg tw-text-black">
@@ -79,6 +83,7 @@
                 standout
                 readonly
                 label-slot
+                :loading="loading"
               >
                 <template #label>
                   <div class="tw-font-semibold tw-text-lg tw-text-black">
@@ -96,6 +101,7 @@
                 standout
                 readonly
                 label-slot
+                :loading="loading"
               >
                 <template #label>
                   <div class="tw-font-semibold tw-text-lg tw-text-black">
@@ -113,6 +119,7 @@
                 standout
                 readonly
                 label-slot
+                :loading="loading"
               >
                 <template #label>
                   <div class="tw-font-semibold tw-text-lg tw-text-black">
@@ -262,6 +269,7 @@
       :rows="event?.event_handling"
       :columns="columns"
       :filter="filter"
+      :loading="loading"
     >
       <template #top>
         <div class="tw-flex tw-justify-between tw-w-full tw-items-center">
@@ -280,6 +288,7 @@
       </template>
       <template #body-cell-Maps="props">
         <q-td :props="props">
+          {{ props.row }}
           <q-btn
             dense
             size="sm"
@@ -339,12 +348,12 @@
               @click="openConfirmDialog('reject')"
               color="negative"
             >
-              <vx-icon iconName="LocationCross" class="tw-mr-2" :size="20" />
-              Tolak
+              <vx-icon iconName="LocationCross" class="md:tw-mr-2" :size="20" />
+              <span class="tw-hidden md:tw-block">Tolak</span>
             </q-btn>
             <q-btn unelevated no-caps color="primary" @click="openActionDialog">
-              <vx-icon iconName="UserAdd" class="tw-mr-2" :size="20" />
-              Ambil Tindakan
+              <vx-icon iconName="UserAdd" class="md:tw-mr-2" :size="20" />
+              <span class="tw-hidden md:tw-block">Ambil Tindakan</span>
             </q-btn>
           </div>
         </template>
@@ -355,8 +364,8 @@
             color="positive"
             @click="openConfirmDialog('finish')"
           >
-            <vx-icon iconName="TickCircle" class="tw-mr-2" :size="20" />
-            Selesai
+            <vx-icon iconName="TickCircle" class="md:tw-mr-2" :size="20" />
+            <span class="tw-hidden md:tw-block">Selesai</span>
           </q-btn>
         </template>
         <template v-else>
@@ -366,8 +375,8 @@
             color="negative"
             @click="openConfirmDialog('delete')"
           >
-            <vx-icon iconName="Trash" class="tw-mr-2" :size="20" />
-            Hapus
+            <vx-icon iconName="Trash" class="md:tw-mr-2" :size="20" />
+            <span class="tw-hidden md:tw-block">Hapus</span>
           </q-btn>
         </template>
       </q-toolbar>
@@ -703,6 +712,8 @@ export default defineComponent({
 
       user_dialog: ref(false),
       filter_user_handling: ref(""),
+
+      loading: ref(false),
     };
   },
   mounted() {
@@ -711,18 +722,22 @@ export default defineComponent({
   },
   methods: {
     getData() {
+      this.loading = true;
       return this.$api
         .get("/events/" + this.$route.params.id)
         .then((res) => {
           this.event = res.data.data;
+          this.loading = false;
         })
         .catch((err) => {});
     },
 
     getUser(roles) {
+      this.loading_user = true;
       return this.$api
         .get("/users?" + roles)
         .then((res) => {
+          this.loading_user = false;
           this.users = res.data.data;
         })
         .catch((err) => {
@@ -742,6 +757,7 @@ export default defineComponent({
 
     assignUser() {
       if (this.selected_users.length > 0) {
+        this.loading = true;
         return this.$api
           .post(
             "/events/assign",
@@ -757,6 +773,7 @@ export default defineComponent({
               message: "User Berhasil di assign",
               color: "positive",
             });
+            this.loading = false;
             this.sendNotification(
               this.selected_users.map((e) => e.id.toString()),
               this.event.event_category.name,

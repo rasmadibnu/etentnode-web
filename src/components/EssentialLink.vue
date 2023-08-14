@@ -2,7 +2,7 @@
   <q-item
     clickable
     :to="{ name: link }"
-    v-if="roles.includes(auth.user.role_id) && !is_header"
+    v-if="roles.includes(auth?.user?.role_id) && !is_header"
   >
     <q-item-section v-if="icon" avatar>
       <vx-icon :iconName="icon" :size="20" />
@@ -12,7 +12,7 @@
       <q-item-label>{{ title }}</q-item-label>
     </q-item-section>
   </q-item>
-  <q-item-label header v-else-if="roles.includes(auth.user.role_id)">
+  <q-item-label header v-else-if="roles.includes(auth?.user?.role_id)">
     {{ title }}
   </q-item-label>
 </template>

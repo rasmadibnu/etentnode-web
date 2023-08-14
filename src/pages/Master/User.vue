@@ -13,8 +13,8 @@
       <template #top>
         <div class="tw-flex tw-justify-between tw-w-full">
           <q-btn outline no-caps color="primary" @click="openDialog(null)">
-            <vx-icon iconName="AddCircle" class="tw-mr-2" :size="20" />
-            Tambah
+            <vx-icon iconName="AddCircle" class="md:tw-mr-2" :size="20" />
+            <span class="tw-hidden md:tw-block">Tambah</span>
           </q-btn>
           <q-input dense placeholder="Cari..." v-model="search" filled>
             <template #prepend>
@@ -80,6 +80,13 @@
         <q-card-section
           class="tw-grid tw-grid-cols-1 md:tw-grid-cols-6 tw-gap-x-4 tw-gap-y-2"
         >
+          <q-input
+            v-model="form.nik"
+            filled
+            class="md:tw-col-span-6"
+            label="NIK"
+            hint=""
+          />
           <q-input
             v-model="form.username"
             filled
@@ -255,6 +262,7 @@ const columns = [
 ];
 
 const initial_form = {
+  nik: null,
   username: null,
   name: null,
   role_id: null,
@@ -304,9 +312,11 @@ export default defineComponent({
       this.$api
         .get("/roles")
         .then((res) => {
-          this.list_role = res.data.data.map((e) => {
-            return { label: e.name, value: e.id };
-          });
+          this.list_role = res.data.data
+            .filter((e) => e.name !== "Super Admin")
+            .map((e) => {
+              return { label: e.name, value: e.id };
+            });
           this.loading = false;
         })
         .catch((err) => {
@@ -344,8 +354,13 @@ export default defineComponent({
             this.getData();
           })
           .catch((err) => {
-            this.closeDialog();
             console.log(err);
+            this.$q.notify({
+              message: err.response.data.message,
+              color: "negative",
+            });
+            this.loading = false;
+            this.closeDialog();
           });
       } else {
         this.$api
@@ -362,8 +377,12 @@ export default defineComponent({
             this.getData();
           })
           .catch((err) => {
+            this.$q.notify({
+              message: err.response.data.message,
+              color: "negative",
+            });
+            this.loading = false;
             this.closeDialog();
-            console.log(err);
           });
       }
     },

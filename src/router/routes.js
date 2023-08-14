@@ -58,6 +58,11 @@ const routes = [
         component: () => import("pages/Master/User.vue"),
         name: "User",
       },
+      {
+        path: "/profile",
+        component: () => import("pages/Profile.vue"),
+        name: "Profile",
+      },
     ],
   },
 

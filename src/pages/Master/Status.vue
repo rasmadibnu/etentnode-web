@@ -13,8 +13,8 @@
       <template #top>
         <div class="tw-flex tw-justify-between tw-w-full">
           <q-btn outline no-caps color="primary" @click="openDialog(null)">
-            <vx-icon iconName="AddCircle" class="tw-mr-2" :size="20" />
-            Create New
+            <vx-icon iconName="AddCircle" class="md:tw-mr-2" :size="20" />
+            <span class="tw-hidden md:tw-block">Tambah</span>
           </q-btn>
           <q-input dense placeholder="Cari..." v-model="search" filled>
             <template #prepend>
@@ -70,7 +70,7 @@
     </q-table>
   </q-page>
   <q-dialog v-model="form_dialog">
-    <q-card style="min-width: 400px">
+    <q-card>
       <q-card-section class="row items-center">
         <div class="text-h6">{{ !is_edit ? "Create" : "Edit" }} Status</div>
         <q-space />

@@ -11,11 +11,11 @@
       class="right-sticky-column-table"
     >
       <template #top>
-        <div class="tw-flex tw-justify-between tw-w-full">
+        <div class="tw-flex tw-justify-between tw-w-full tw-items-center">
           <div>
             <q-btn outline no-caps color="primary" @click="getData">
-              <vx-icon iconName="Refresh" class="tw-mr-2" :size="20" />
-              Refersh
+              <vx-icon iconName="Refresh" class="md:tw-mr-2" :size="20" />
+              <span class="tw-hidden md:tw-block">Refersh</span>
             </q-btn>
           </div>
           <div>

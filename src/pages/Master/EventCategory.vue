@@ -13,8 +13,8 @@
       <template #top>
         <div class="tw-flex tw-justify-between tw-w-full">
           <q-btn outline no-caps color="primary" @click="openDialog(null)">
-            <vx-icon iconName="AddCircle" class="tw-mr-2" :size="20" />
-            Tambah
+            <vx-icon iconName="AddCircle" class="md:tw-mr-2" :size="20" />
+            <span class="tw-hidden md:tw-block">Tambah</span>
           </q-btn>
           <q-input dense placeholder="Cari..." v-model="search" filled>
             <template #prepend>
@@ -126,7 +126,7 @@
     </q-card>
   </q-dialog>
   <q-dialog v-model="form_dialog">
-    <q-card style="min-width: 400px">
+    <q-card>
       <q-card-section class="row items-center">
         <div class="text-h6">
           {{ !is_edit ? "Tambah" : "Ubah" }} Kategori Kejadian
@@ -182,7 +182,14 @@
 
       <q-card-actions align="right">
         <q-btn flat label="Batal" no-caps v-close-popup />
-        <q-btn flat label="Ya" color="primary" no-caps @click="deleteData" />
+        <q-btn
+          flat
+          label="Ya"
+          color="primary"
+          no-caps
+          @click="deleteData"
+          :loading="loading"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -333,6 +340,7 @@ export default defineComponent({
       this.confirm = true;
     },
     deleteData() {
+      this.loading = true;
       this.$api
         .delete("/event-categories/" + this.id)
         .then((res) => {
@@ -359,6 +367,7 @@ export default defineComponent({
     },
 
     assignRole() {
+      this.loading = true;
       this.$api
         .post(
           "/event-categories/assign",
@@ -371,6 +380,7 @@ export default defineComponent({
             message: "Role berhasil diassign",
             color: "positive",
           });
+          this.loading = true;
           this.role_dialog = false;
         });
     },

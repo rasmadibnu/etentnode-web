@@ -13,7 +13,7 @@
 
         <q-toolbar-title class="tw-font-medium"> EtentNode </q-toolbar-title>
         <q-space />
-        <div>
+        <div class="tw-space-x-2">
           <q-btn flat round dense>
             <vx-icon iconName="NotificationBing" :size="22" />
             <q-badge
@@ -73,6 +73,31 @@
               </q-list>
             </q-menu>
           </q-btn>
+          <q-btn flat round dense>
+            <vx-icon iconName="ProfileCircle" :size="22" />
+            <q-menu>
+              <q-list style="min-width: 100px">
+                <q-item clickable v-close-popup :to="{ name: 'Profile' }">
+                  <q-item-section avatar>
+                    <vx-icon iconName="User" :size="22" />
+                  </q-item-section>
+                  <q-item-section>Profile</q-item-section>
+                </q-item>
+                <q-separator />
+                <q-item
+                  clickable
+                  v-close-popup
+                  class="text-negative"
+                  @click="alert = true"
+                >
+                  <q-item-section avatar>
+                    <vx-icon iconName="Logout" :size="22" />
+                  </q-item-section>
+                  <q-item-section>Keluar</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
           <!-- <q-btn flat no-caps
             >{{ auth.user.name }}
             <VxIcon class="tw-ml-2" :size="18" iconName="ArrowDown2" />
@@ -111,9 +136,9 @@
         </q-avatar>
         <div>
           <div class="text-h6 tw-font-semibold tw-line-clamp-1">
-            {{ auth.user.name }}
+            {{ auth.user?.name }}
           </div>
-          <div class="tw-text-sm">{{ auth.user.role.name }}</div>
+          <div class="tw-text-sm">{{ auth.user?.role?.name }}</div>
         </div>
       </div>
       <q-list>
@@ -124,20 +149,6 @@
           :key="link.title"
           v-bind="link"
         />
-
-        <q-item
-          clickable
-          @click="alert = true"
-          class="tw-bottom-0 tw-w-full text-negative tw-bg-white tw-absolute"
-        >
-          <q-item-section avatar>
-            <vx-icon :iconName="'Logout'" :size="20" />
-          </q-item-section>
-
-          <q-item-section>
-            <q-item-label>{{ "Keluar" }}</q-item-label>
-          </q-item-section>
-        </q-item>
       </q-list>
     </q-drawer>
 
@@ -200,7 +211,7 @@ const linksList = [
   },
 
   {
-    title: "Master Data",
+    title: "Mangement",
     is_header: true,
     roles: [2, 3],
   },
@@ -235,11 +246,11 @@ export default defineComponent({
 
   setup() {
     const events = useEventStore();
-    const socket = new WebSocket("wss://api.etentnode.online/ws");
+    const socket = new WebSocket("ws://localhost:7800/ws");
 
     socket.addEventListener("message", function (event) {
       const jsonData = JSON.parse(event.data);
-      if (jsonData.segments.includes(auth.user.role.name)) {
+      if (jsonData.segments.includes(auth?.user?.role?.name)) {
         Notify.create({
           message: jsonData.title,
           caption: jsonData.message,
@@ -271,7 +282,7 @@ export default defineComponent({
     const badge = ref(0);
 
     function getNotification() {
-      api.get("/notification/" + auth.user.role.name).then((res) => {
+      api.get("/notification/" + auth?.user?.role?.name).then((res) => {
         notification.value = res.data.data;
       });
     }

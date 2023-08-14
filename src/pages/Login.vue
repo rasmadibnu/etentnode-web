@@ -18,11 +18,8 @@
             </div>
 
             <div>
-              <div class="tw-text-2xl tw-font-semibold">
-                Selamat Datang
-                <span class="md:tw-hidden tw-block">di Etent Node</span>
-              </div>
-              <div>Masuk dengan akun anda</div>
+              <div class="tw-text-2xl tw-font-semibold">Selamat Datang 👋🏻</div>
+              <div>Silahkan masuk dengan akun anda</div>
             </div>
             <q-form @submit.prevent="login" class="tw-space-y-2">
               <q-input

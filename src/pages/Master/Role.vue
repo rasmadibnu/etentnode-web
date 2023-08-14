@@ -13,8 +13,8 @@
       <template #top>
         <div class="tw-flex tw-justify-between tw-w-full">
           <q-btn outline no-caps color="primary" @click="openDialog(null)">
-            <vx-icon iconName="AddCircle" class="tw-mr-2" :size="20" />
-            Tambah
+            <vx-icon iconName="AddCircle" class="md:tw-mr-2" :size="20" />
+            <span class="tw-hidden md:tw-block">Tambah</span>
           </q-btn>
           <q-input dense placeholder="Cari..." v-model="search" filled>
             <template #prepend>
