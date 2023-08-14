@@ -101,8 +101,10 @@ export default defineComponent({
         .then(function (response) {
           sessionStorage.setItem("access_token", response.data.data.token);
           self.auth.token = response.data.data.token;
-          self.$router.push({ name: "Event" });
-          self.loading = false;
+          self.auth.get_user().then((res) => {
+            self.$router.push({ name: "Event" });
+            self.loading = false;
+          });
         })
         .catch((err) => {
           self.loading = false;

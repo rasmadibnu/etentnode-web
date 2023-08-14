@@ -15,7 +15,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    if (this.auth.user == null) {
+    if (this.auth.user == null && this.auth.token != null) {
       this.auth.get_user();
     }
   },

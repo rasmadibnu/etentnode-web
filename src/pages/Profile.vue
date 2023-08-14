@@ -54,6 +54,7 @@
             class="md:tw-col-span-2"
             label="Role"
             readonly
+            hint
           />
           <q-input
             v-model="user.password"
@@ -61,6 +62,7 @@
             filled
             class="md:tw-col-span-3"
             label="Password"
+            hint
           />
           <q-input
             v-model="user.confirm_password"
