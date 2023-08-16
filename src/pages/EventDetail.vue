@@ -13,7 +13,7 @@
               class="tw-cursor-zoom-in text-center"
               @click="openImageDialog(event?.image)"
             >
-              <q-avatar class="tw-w-full tw-h-52" square>
+              <q-avatar class="tw-w-full md:tw-h-[500px] tw-h-[300px]" square>
                 <q-img :src="event?.image" />
               </q-avatar>
             </div>
@@ -177,7 +177,16 @@
                 <div v-if="event?.user_create?.name">
                   <div class="tw-font-semibold">No Telp</div>
                   <div>
-                    {{ event?.user_create?.phone_number }}
+                    <q-btn
+                      :href="`https://wa.me/${validatePhone(
+                        event?.user_create?.phone_number
+                      )}`"
+                      :label="event?.user_create?.phone_number"
+                      target="_blank"
+                      flat
+                      color="primary"
+                      dense
+                    />
                   </div>
                 </div>
                 <div v-if="event?.user_create?.email">
@@ -867,6 +876,19 @@ export default defineComponent({
         channel_id: "e152bbd4-389a-46f2-af2e-fcd717b77b38",
       };
       this.$api.post("/send-notification", payload);
+    },
+
+    validatePhone(number) {
+      let phoneNumber = number.trim();
+      if (!phoneNumber.startsWith("62") && !phoneNumber.startsWith("+62")) {
+        if (phoneNumber.startsWith("0")) {
+          // Remove the leading '0' before adding '62'
+          phoneNumber = phoneNumber.substr(1);
+        }
+        return "62" + phoneNumber;
+      } else {
+        return phoneNumber;
+      }
     },
   },
 });

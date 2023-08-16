@@ -1,5 +1,7 @@
 <template>
-  <div class="tw-grid tw-grid-cols-2 tw-h-screen tw-font-['Poppins']">
+  <div
+    class="md:tw-grid tw-grid-cols-2 tw-flex tw-h-screen tw-font-['Poppins']"
+  >
     <div class="bg-primary text-white tw-hidden md:tw-flex">
       <div class="tw-m-auto">
         <q-avatar size="400px" square>
@@ -7,7 +9,7 @@
         </q-avatar>
       </div>
     </div>
-    <div class="tw-flex">
+    <div class="tw-flex tw-m-auto">
       <div class="tw-m-auto">
         <q-card class="tw-w-96" flat>
           <q-card-section class="tw-space-y-4">
@@ -84,7 +86,7 @@ export default defineComponent({
   },
   mounted() {
     if (sessionStorage.getItem("access_token")) {
-      this.$router.push({ name: "Home" });
+      this.$router.push({ name: "Event" });
     }
   },
   methods: {
