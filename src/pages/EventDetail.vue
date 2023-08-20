@@ -621,6 +621,7 @@
     pdf-orientation="portrait"
     ref="html2Pdf"
   >
+    <!-- @beforeDownload="beforeDownload($event)" -->
     <template v-slot:pdf-content>
       <div
         class="tw-grid md:tw-grid-cols-12 tw-grid-cols-4 md:tw-gap-4 tw-space-y-4 md:tw-space-y-0"
@@ -629,16 +630,6 @@
           <q-card flat class="tw-w-full">
             <q-card-section>
               <div class="text-h6 tw-font-semibold">Detail Kejadian</div>
-            </q-card-section>
-            <q-card-section class="q-pt-none">
-              <div
-                class="tw-cursor-zoom-in text-center"
-                @click="openImageDialog(event?.image)"
-              >
-                <q-avatar class="tw-w-full md:tw-h-[500px] tw-h-[300px]" square>
-                  <q-img :src="imageToBase64(event?.image)" />
-                </q-avatar>
-              </div>
             </q-card-section>
             <q-card-section>
               <div class="tw-grid tw-grid-cols-3 tw-gap-4">
@@ -883,20 +874,11 @@
                   </q-item>
                 </q-list>
               </q-card-section>
-              <q-card-actions align="center">
-                <q-btn
-                  flat
-                  label="View All"
-                  class="tw-w-full"
-                  no-caps
-                  color="primary"
-                  @click="user_dialog = true"
-                />
-              </q-card-actions>
             </q-card>
           </div>
         </div>
       </div>
+      <q-separator />
       <q-card
         v-for="(event_handling, index) in event?.event_handling"
         :key="event_handling.id"
@@ -906,13 +888,82 @@
         </q-card-section>
 
         <q-card-section>
-          <div
-            class="q-pt-none text-center tw-cursor-zoom-in"
-            @click="openImageDialog(event_handling?.image)"
-          >
-            <q-avatar class="tw-w-full md:tw-h-[500px] tw-h-[300px]" square>
-              <q-img :src="event_handling?.image" />
-            </q-avatar>
+          <div class="tw-grid tw-grid-cols-3 tw-gap-4">
+            <q-input
+              borderless
+              :model-value="event_handling?.location"
+              standout
+              readonly
+              label-slot
+              :loading="loading"
+            >
+              <q-tooltip> {{ event_handling?.location }}</q-tooltip>
+              <template #label>
+                <div class="tw-font-semibold tw-text-lg tw-text-black">
+                  Lokasi
+                </div>
+              </template>
+              <template v-slot:append>
+                <q-btn
+                  dense
+                  flat
+                  no-caps
+                  unelevated
+                  color="primary"
+                  :href="`https://www.google.com/maps/search/${event_handling?.lat},${event_handling?.lng}`"
+                  target="_blank"
+                >
+                  <vx-icon iconName="Location" :size="22" />
+                </q-btn>
+              </template>
+            </q-input>
+            <q-input
+              borderless
+              :model-value="
+                moment(event_handling?.created_at).format('YYYY-MM-DD HH:mm:ss')
+              "
+              standout
+              readonly
+              label-slot
+            >
+              <template #label>
+                <div class="tw-font-semibold tw-text-lg tw-text-black">
+                  Ditangani Pada
+                </div>
+              </template>
+            </q-input>
+            <q-input
+              borderless
+              :model-value="event_handling?.user_create?.name"
+              standout
+              readonly
+              label-slot
+              :loading="loading"
+            >
+              <template #label>
+                <div class="tw-font-semibold tw-text-lg tw-text-black">
+                  Ditangani Oleh
+                </div>
+              </template>
+            </q-input>
+            <q-input
+              borderless
+              :model-value="
+                event?.event_category_type?.name
+                  ? event?.event_category_type?.name
+                  : '-'
+              "
+              standout
+              readonly
+              label-slot
+              :loading="loading"
+            >
+              <template #label>
+                <div class="tw-font-semibold tw-text-lg tw-text-black">
+                  Tipe
+                </div>
+              </template>
+            </q-input>
           </div>
           <div class="tw-space-y-3 tw-pb-10">
             <div v-if="event_handling?.description">
@@ -947,6 +998,7 @@
             </div>
           </div>
         </q-card-section>
+        <q-separator />
       </q-card>
     </template>
   </vue3-html2pdf>
@@ -1070,6 +1122,8 @@ export default defineComponent({
       filter_user_handling: ref(""),
 
       loading: ref(false),
+      imageBase64: ref(""),
+      imageBase64Handling: ref([]),
     };
   },
   mounted() {
@@ -1243,15 +1297,17 @@ export default defineComponent({
     },
 
     imageToBase64(url) {
-      this.$axios.get(url, { responseType: "arraybuffer" }).then((res) => {
-        const base64Image = btoa(
-          new Uint8Array(res.data).reduce(
-            (data, byte) => data + String.fromCharCode(byte),
-            ""
-          )
-        );
-        return `data:image/jpeg;base64,${base64Image}`;
-      });
+      return this.$axios
+        .get(url, { responseType: "arraybuffer" })
+        .then((res) => {
+          const base64Image = btoa(
+            new Uint8Array(res.data).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              ""
+            )
+          );
+          return `data:image/jpeg;base64,${base64Image}`;
+        });
     },
   },
 });
