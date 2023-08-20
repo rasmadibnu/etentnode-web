@@ -297,7 +297,6 @@
       </template>
       <template #body-cell-Maps="props">
         <q-td :props="props">
-          {{ props.row }}
           <q-btn
             dense
             size="sm"
@@ -378,15 +377,21 @@
           </q-btn>
         </template>
         <template v-else>
-          <q-btn
-            unelevated
-            no-caps
-            color="negative"
-            @click="openConfirmDialog('delete')"
-          >
-            <vx-icon iconName="Trash" class="md:tw-mr-2" :size="20" />
-            <span class="tw-hidden md:tw-block">Hapus</span>
-          </q-btn>
+          <div class="tw-space-x-2">
+            <q-btn unelevated no-caps color="primary" @click="printPDF()">
+              <vx-icon iconName="DocumentText" class="md:tw-mr-2" :size="20" />
+              <span class="tw-hidden md:tw-block">Print</span>
+            </q-btn>
+            <q-btn
+              unelevated
+              no-caps
+              color="negative"
+              @click="openConfirmDialog('delete')"
+            >
+              <vx-icon iconName="Trash" class="md:tw-mr-2" :size="20" />
+              <span class="tw-hidden md:tw-block">Hapus</span>
+            </q-btn>
+          </div>
         </template>
       </q-toolbar>
     </q-page-sticky>
@@ -605,12 +610,353 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <vue3-html2pdf
+    :show-layout="false"
+    :float-layout="true"
+    :enable-download="true"
+    :preview-modal="true"
+    :paginate-elements-by-height="2000"
+    :filename="'test'"
+    pdf-format="a4"
+    pdf-orientation="portrait"
+    ref="html2Pdf"
+  >
+    <template v-slot:pdf-content>
+      <div
+        class="tw-grid md:tw-grid-cols-12 tw-grid-cols-4 md:tw-gap-4 tw-space-y-4 md:tw-space-y-0"
+      >
+        <div class="tw-col-span-8">
+          <q-card flat class="tw-w-full">
+            <q-card-section>
+              <div class="text-h6 tw-font-semibold">Detail Kejadian</div>
+            </q-card-section>
+            <q-card-section class="q-pt-none">
+              <div
+                class="tw-cursor-zoom-in text-center"
+                @click="openImageDialog(event?.image)"
+              >
+                <q-avatar class="tw-w-full md:tw-h-[500px] tw-h-[300px]" square>
+                  <q-img :src="imageToBase64(event?.image)" />
+                </q-avatar>
+              </div>
+            </q-card-section>
+            <q-card-section>
+              <div class="tw-grid tw-grid-cols-3 tw-gap-4">
+                <q-input
+                  borderless
+                  :model-value="event?.location"
+                  standout
+                  readonly
+                  label-slot
+                  :loading="loading"
+                >
+                  <q-tooltip> {{ event?.location }}</q-tooltip>
+                  <template #label>
+                    <div class="tw-font-semibold tw-text-lg tw-text-black">
+                      Lokasi
+                    </div>
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      dense
+                      flat
+                      no-caps
+                      unelevated
+                      color="primary"
+                      :href="`https://www.google.com/maps/search/${event?.lat},${event?.lng}`"
+                      target="_blank"
+                    >
+                      <vx-icon iconName="Location" :size="22" />
+                    </q-btn>
+                  </template>
+                </q-input>
+                <q-input
+                  borderless
+                  :model-value="event?.status?.name"
+                  standout
+                  readonly
+                  label-slot
+                  :loading="loading"
+                >
+                  <template #label>
+                    <div class="tw-font-semibold tw-text-lg tw-text-black">
+                      Status
+                    </div>
+                  </template>
+                </q-input>
+                <q-input
+                  borderless
+                  :model-value="
+                    moment(event?.created_at).format('YYYY-MM-DD HH:mm:ss')
+                  "
+                  standout
+                  readonly
+                  label-slot
+                >
+                  <template #label>
+                    <div class="tw-font-semibold tw-text-lg tw-text-black">
+                      Dibuat Pada
+                    </div>
+                  </template>
+                </q-input>
+                <q-input
+                  borderless
+                  :model-value="event?.event_category?.name"
+                  standout
+                  readonly
+                  label-slot
+                  :loading="loading"
+                >
+                  <template #label>
+                    <div class="tw-font-semibold tw-text-lg tw-text-black">
+                      Kategori
+                    </div>
+                  </template>
+                </q-input>
+                <q-input
+                  borderless
+                  :model-value="
+                    event?.event_category_type?.name
+                      ? event?.event_category_type?.name
+                      : '-'
+                  "
+                  standout
+                  readonly
+                  label-slot
+                  :loading="loading"
+                >
+                  <template #label>
+                    <div class="tw-font-semibold tw-text-lg tw-text-black">
+                      Tipe
+                    </div>
+                  </template>
+                </q-input>
+                <q-input
+                  borderless
+                  :model-value="
+                    moment(event?.updated_at).format('YYYY-MM-DD') !=
+                    '0001-01-01'
+                      ? moment(event?.updated_at).format('YYYY-MM-DD HH:mm:ss')
+                      : '-'
+                  "
+                  standout
+                  readonly
+                  label-slot
+                  :loading="loading"
+                >
+                  <template #label>
+                    <div class="tw-font-semibold tw-text-lg tw-text-black">
+                      Diupdate Pada
+                    </div>
+                  </template>
+                </q-input>
+              </div>
+              <q-separator class="tw-my-4" />
+              <div class="tw-space-y-3">
+                <div v-if="event?.description">
+                  <div class="tw-font-semibold">Deskripsi</div>
+                  <div>
+                    {{ event?.description }}
+                  </div>
+                </div>
+                <div v-if="event?.type_description">
+                  <div class="tw-font-semibold">Tipe Deskripsi</div>
+                  <div>{{ event?.type_description }}</div>
+                </div>
+                <div v-if="event?.other_description">
+                  <div class="tw-font-semibold">Deskripsi Lainnya</div>
+                  <div>{{ event?.other_description }}</div>
+                </div>
+                <div v-if="event?.type_vehicle_involved">
+                  <div class="tw-font-semibold">Jenis Kendaraan Terlibat</div>
+                  <div>{{ event?.type_vehicle_involved }}</div>
+                </div>
+                <div v-if="event?.victim_involved">
+                  <div class="tw-font-semibold">Korban Terlibat</div>
+                  <div>{{ event?.victim_involved }}</div>
+                </div>
+                <div v-if="event?.responsible">
+                  <div class="tw-font-semibold">Penanggung Jawab</div>
+                  <div>{{ event?.responsible }}</div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="tw-col-span-4 tw-relative">
+          <div class="">
+            <q-card class="tw-mb-4" flat>
+              <q-card-section>
+                <div class="text-h6 tw-font-semibold">Pelapor</div>
+              </q-card-section>
+              <q-card-section class="q-py-none">
+                <div class="tw-space-y-3 tw-pb-10">
+                  <div v-if="event?.user_create?.name">
+                    <div class="tw-font-semibold">Nama</div>
+                    <div>
+                      {{ event?.user_create?.name }}
+                    </div>
+                  </div>
+                  <div v-if="event?.user_create?.name">
+                    <div class="tw-font-semibold">No Telp</div>
+                    <div>
+                      <q-btn
+                        :href="`https://wa.me/${validatePhone(
+                          event?.user_create?.phone_number
+                        )}`"
+                        :label="event?.user_create?.phone_number"
+                        target="_blank"
+                        flat
+                        color="primary"
+                        dense
+                      />
+                    </div>
+                  </div>
+                  <div v-if="event?.user_create?.email">
+                    <div class="tw-font-semibold">E-Mail</div>
+                    <div>
+                      {{ event?.user_create?.email }}
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+            <q-card flat v-if="event?.event_user_handling?.length > 0">
+              <q-card-section>
+                <div class="text-h6 tw-font-semibold">User Penangan</div>
+              </q-card-section>
+              <q-card-section class="q-pt-none">
+                <div class="tw-grid tw-grid-cols-1 tw-gap-2">
+                  <q-input
+                    borderless
+                    :model-value="
+                      event?.user_assign?.name ? event?.user_assign?.name : '-'
+                    "
+                    standout
+                    readonly
+                    label-slot
+                  >
+                    <template #label>
+                      <div class="tw-font-semibold tw-text-lg tw-text-black">
+                        Assign Oleh
+                      </div>
+                    </template>
+                  </q-input>
+                  <q-input
+                    borderless
+                    :model-value="
+                      moment(event?.assigned_at).format('YYYY-MM-DD') !=
+                      '0001-01-01'
+                        ? moment(event?.assigned_at).format(
+                            'YYYY-MM-DD HH:mm:ss'
+                          )
+                        : '-'
+                    "
+                    standout
+                    readonly
+                    label-slot
+                  >
+                    <template #label>
+                      <div class="tw-font-semibold tw-text-lg tw-text-black">
+                        Assign Pada
+                      </div>
+                    </template>
+                  </q-input>
+                </div>
+                <q-separator />
+                <q-list separator>
+                  <q-item
+                    v-for="(user, index) in event?.event_user_handling.slice(
+                      0,
+                      5
+                    )"
+                    :key="user.id"
+                  >
+                    <q-item-section>
+                      <q-item-label
+                        >{{ index + 1 }}. {{ user?.user?.name }}</q-item-label
+                      >
+                      <q-item-label caption>{{
+                        user?.user?.role?.name
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card-section>
+              <q-card-actions align="center">
+                <q-btn
+                  flat
+                  label="View All"
+                  class="tw-w-full"
+                  no-caps
+                  color="primary"
+                  @click="user_dialog = true"
+                />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </div>
+      </div>
+      <q-card
+        v-for="(event_handling, index) in event?.event_handling"
+        :key="event_handling.id"
+      >
+        <q-card-section>
+          <div class="text-h6">Detail Penananganan #{{ index + 1 }}</div>
+        </q-card-section>
+
+        <q-card-section>
+          <div
+            class="q-pt-none text-center tw-cursor-zoom-in"
+            @click="openImageDialog(event_handling?.image)"
+          >
+            <q-avatar class="tw-w-full md:tw-h-[500px] tw-h-[300px]" square>
+              <q-img :src="event_handling?.image" />
+            </q-avatar>
+          </div>
+          <div class="tw-space-y-3 tw-pb-10">
+            <div v-if="event_handling?.description">
+              <div class="tw-font-semibold">Deskripsi</div>
+              <div>
+                {{ event_handling?.description }}
+              </div>
+            </div>
+            <div v-if="event_handling?.event_category_type_id != 0">
+              <div class="tw-font-semibold">Tipe Insiden</div>
+              <div>{{ event_handling?.event_category_type?.name }}</div>
+            </div>
+            <div v-if="event_handling?.victim_involved">
+              <div class="tw-font-semibold">Korban Terlibat</div>
+              <div>{{ event_handling?.victim_involved }}</div>
+            </div>
+            <div v-if="event_handling?.minor_injuries">
+              <div class="tw-font-semibold">Luka Ringan</div>
+              <div>{{ event_handling?.minor_injuries }}</div>
+            </div>
+            <div v-if="event_handling?.seriously_injuries">
+              <div class="tw-font-semibold">Luka Berat</div>
+              <div>{{ event_handling?.seriously_injuries }}</div>
+            </div>
+            <div v-if="event_handling?.die">
+              <div class="tw-font-semibold">Meninggal</div>
+              <div>{{ event_handling?.die }}</div>
+            </div>
+            <div v-if="event_handling?.identification">
+              <div class="tw-font-semibold">Identifikasi</div>
+              <div>{{ event_handling?.identification }}</div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </template>
+  </vue3-html2pdf>
 </template>
 <script>
 import { defineComponent, ref } from "vue";
 import VxIcon from "components/VxIcon.vue";
 import moment from "moment";
-import { event } from "quasar";
+import Vue3Html2pdf from "vue3-html2pdf";
+import jsPDF from "jspdf";
 
 const columns = [
   {
@@ -695,6 +1041,7 @@ export default defineComponent({
   props: ["user"],
   components: {
     VxIcon,
+    Vue3Html2pdf,
   },
   setup() {
     return {
@@ -889,6 +1236,22 @@ export default defineComponent({
       } else {
         return phoneNumber;
       }
+    },
+
+    printPDF() {
+      this.$refs.html2Pdf.generatePdf();
+    },
+
+    imageToBase64(url) {
+      this.$axios.get(url, { responseType: "arraybuffer" }).then((res) => {
+        const base64Image = btoa(
+          new Uint8Array(res.data).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ""
+          )
+        );
+        return `data:image/jpeg;base64,${base64Image}`;
+      });
     },
   },
 });
