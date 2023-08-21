@@ -616,7 +616,7 @@
     :enable-download="true"
     :preview-modal="true"
     :paginate-elements-by-height="2000"
-    :filename="'test'"
+    :filename="event?.event_category?.name + ' #' + event.id"
     pdf-format="a4"
     pdf-orientation="portrait"
     ref="html2Pdf"
